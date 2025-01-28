@@ -1,0 +1,73 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+
+# Virtual Environment
+.venv/
+env/
+ENV/
+
+# Logs and Debugging
+*.log
+*.out
+*.tmp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE-specific files
+.idea/
+.vscode/
+*.iml
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# CSV / Dataset files
+*.csv
+
+# Model files
+*.pkl
+
+# Test coverage
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+htmlcov/
+*.cover
+*.py,cover
+
+# Static type checker
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# Python package management tools
+*.pdm.toml
+.pdm-python
+pdm.lock
+poetry.lock
+Pipfile.lock
+uv.lock
+
+# Temporary files
+*.swp
+*.bak
+*.tmp
+*.temp
