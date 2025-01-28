@@ -1,0 +1,8 @@
+pandas
+scikit-learn
+nltk
+flask
+fastapi
+uvicorn
+pandantic
+bs4
