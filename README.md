@@ -61,7 +61,7 @@ ProjectMLFakeNewsCheck/
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/fake-news-detection.git
+git clone https://github.com/wxnxthxn/Machine-Learning-Fake-News-Detection.git
 cd fake-news-detection
 ```
 
