@@ -1,28 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
+  <meta charset="UTF-8">
   <title>Fake News Checker</title>
   <style>
-    body {
-      font-family: sans-serif;
-      min-width: 200px;
-      min-height: 200px;
-      padding: 10px;
-    }
-    input[type='text'] {
-      width: 100%;
-    }
-    button {
-      width: 100%;
-      margin-top: 10px;
-    }
+    body { font-family: sans-serif; width: 250px; padding: 10px; text-align: center; }
+    button { width: 100%; padding: 8px; margin-top: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    #result { margin-top: 10px; font-size: 14px; }
+    #result-banner { width: 100%; max-height: 50px; margin-bottom: 5px; display: none; } /* ซ่อนแบนเนอร์เริ่มต้น */
   </style>
 </head>
 <body>
-  <h1>Fake News Checker</h1>
-  <input type="text" id="url-input" placeholder="Enter URL here..." />
-  <button id="check-btn">Check URL</button>
-  <div id="result"></div>
+  <h3>Fake News Checker</h3>
+
+  <div id="result">
+    <img id="result-banner" src="" style="display: none;">  <!-- แบนเนอร์แสดงผล -->
+    <p id="result-text">รอผลลัพธ์...</p>
+    <p id="result-score"></p>
+  </div>
+
+  <button id="close-popup">ปิด</button>
   <script src="popup.js"></script>
 </body>
 </html>

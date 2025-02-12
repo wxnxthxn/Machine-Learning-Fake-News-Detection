@@ -1,21 +1,23 @@
-document.getElementById('check-btn').addEventListener('click', async () => {
-  const url = document.getElementById('url-input').value.trim();
-  if (!url) return;
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.storage.local.get(['analysis'], function (data) {
+        if (data.analysis) {
+            document.getElementById('result-confidence').innerText = `โอกาสที่เป็นข่าวจริง: ${data.analysis.score.toFixed(2)}%`;
+            document.getElementById('result-text').innerText = getLabel(data.analysis.score);
+            document.getElementById('result-banner').src = getBanner(data.analysis.score);
+        }
+    });
 
-  const response = await fetch("http://localhost:8000/check", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({url: url})
-  });
-  const result = await response.json();
-  const resultDiv = document.getElementById('result');
-  resultDiv.innerHTML = `
-    <h4>Result</h4>
-    <p>Score: ${result.score.toFixed(2)}%</p>
-    <p>${result.explanation}</p>
-    <h5>Recommendations:</h5>
-    <ul>
-      ${result.recommendations.map(r => `<li><a href="${r.url}" target="_blank">${r.title}</a></li>`).join('')}
-    </ul>
-  `;
+    document.getElementById('close-popup').addEventListener('click', () => window.close());
 });
+
+function getBanner(score) {
+    if (score >= 75) return 'banner/correct.PNG';  // ✅ ข่าวจริง
+    if (score >= 50) return 'banner/warning.PNG';  // ⚠️ ข่าวไม่น่าเชื่อถือ
+    return 'banner/incorrect.PNG';                 // ❌ ข่าวปลอม
+}
+
+function getLabel(score) {
+    if (score >= 75) return '✅ ข่าวจริง';
+    if (score >= 50) return '⚠️ ข่าวไม่น่าเชื่อถือ';
+    return '❌ ข่าวปลอม';
+}

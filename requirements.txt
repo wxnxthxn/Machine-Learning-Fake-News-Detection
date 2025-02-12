@@ -1,7 +1,8 @@
-pandas==2.0.3
-scikit-learn==1.2.2
-fastapi==0.95.2
-uvicorn==0.22.0
-pydantic==1.10.7
-beautifulsoup4==4.12.2
-python_version == 3.12
+pandas
+scikit-learn
+nltk
+flask
+fastapi
+uvicorn
+pandantic
+bs4
