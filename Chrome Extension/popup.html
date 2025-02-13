@@ -2,25 +2,70 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Fake News Checker</title>
+  <title>ผลการวิเคราะห์ข่าว</title>
   <style>
-    body { font-family: sans-serif; width: 250px; padding: 10px; text-align: center; }
-    button { width: 100%; padding: 8px; margin-top: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
-    #result { margin-top: 10px; font-size: 14px; }
-    #result-banner { width: 100%; max-height: 50px; margin-bottom: 5px; display: none; } /* ซ่อนแบนเนอร์เริ่มต้น */
+    body {
+        font-family: sans-serif;
+        width: 270px;
+        padding: 15px;
+        text-align: left;
+    }
+    h3 {
+        text-align: center;
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    button {
+        width: 100%;
+        padding: 8px;
+        margin-top: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    #result-banner {
+        width: 100%;
+        max-height: 50px;
+        margin-bottom: 5px;
+    }
+    .result-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .result-details {
+        display: flex;
+        flex-direction: column;
+        gap: 2px; /* ✅ ลดระยะห่างระหว่างบรรทัดจาก 5px → 2px */
+        font-size: 16px;
+        font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h3>Fake News Checker</h3>
+  <h3>🔍 ผลการวิเคราะห์ข่าว</h3>
 
-  <div id="result">
-    <img id="result-banner" src="" style="display: none;">  <!-- แบนเนอร์แสดงผล -->
-    <p id="result-text">รอผลลัพธ์...</p>
-    <p id="result-score"></p>
+  <img id="result-banner" src="">
+
+  <div class="result-details">
+      <p class="result-container">
+          ผลลัพธ์ : <span id="result-analysis"></span>
+      </p>
+      <p class="result-container">
+          โอกาสที่เป็นข่าวจริง : <span id="result-score"></span>%
+      </p>
   </div>
 
   <button id="close-popup">ปิด</button>
+
   <script src="popup.js"></script>
 </body>
 </html>

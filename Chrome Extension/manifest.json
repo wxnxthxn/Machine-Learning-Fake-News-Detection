@@ -3,7 +3,7 @@
     "name": "Fake News Checker",
     "version": "1.0",
     "description": "ตรวจสอบข่าวปลอมได้อย่างง่ายดาย",
-    "permissions": ["storage", "contextMenus", "tabs"],
+    "permissions": ["storage", "contextMenus", "tabs", "scripting"],
     "background": {
         "service_worker": "background.js"
     },
@@ -16,7 +16,8 @@
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
-            "js": ["content_script.js"]
+            "js": ["content_script.js"],
+            "run_at": "document_idle"
         }
     ],
     "web_accessible_resources": [
