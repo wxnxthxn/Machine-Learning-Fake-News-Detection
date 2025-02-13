@@ -40,8 +40,10 @@ Desktop.ini
 # CSV / Dataset files
 *.csv
 
+
 # Model files
 *.pkl
+*.pth
 
 # Test coverage
 .coverage
