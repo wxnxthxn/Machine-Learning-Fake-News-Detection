@@ -1,7 +1,7 @@
 ### `📰 Machine Learning Fake News Detection`
 
  ## 🔍 **Project Overview**
-This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text or article URLs. It uses a trained Machine Learning model (Logistic Regression + TF-IDF) to classify news as *real* or *fake*. The system can also give a trust score and explanations.
+This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text or article URLs. It uses a trained **ThaiBERT (WangchanBERTa) model** to classify news as *real* or *fake*. The system can also give a trust score and explanations.
 
 ## 📌Table of Contents
 
@@ -19,7 +19,7 @@ This project provides a **Chrome Extension** and a **FastAPI** backend to detect
 ## 📌Features
 
 ✅ Classifies news articles as **Real or Fake**  
-✅  **trained ML model** for predictions  
+✅ **Trained ThaiBERT (WangchanBERTa) model** for predictions  
 ✅ Supports **both direct text input analysis**  
 ✅ Provides a **FastAPI-based REST API** for integration into other systems  
 ✅ Offers **trusted news recommendations** if an article is likely fake  
@@ -28,8 +28,8 @@ This project provides a **Chrome Extension** and a **FastAPI** backend to detect
 ## 🛠 **Tech Stack**
 - **Programming Language:** Python
 - **Framework:** FastAPI
-- **Machine Learning Model:** Logistic Regression with TF-IDF
-- **Data Processing:** Pandas, Joblib, BeautifulSoup
+- **Machine Learning Model:** ThaiBERT (WangchanBERTa) for text classification
+- **Data Processing:** Pandas, PyTorch, Transformers
 - **Storage & Deployment:** GitHub, Model Persistence
 ---
 ## Architecture
@@ -39,20 +39,25 @@ ProjectMLFakeNewsCheck/
 ├─ backend/
 │   ├─ app.py
 │   ├─ model/
-│   │   ├─ model.pkl
-│   │   └─ vectorizer.pkl
-├─ extension/
+│   │   ├─ model_latest.pth
+│   │   ├─ update_model.py
+│   │   └─ predict.py
+│   ├─ training/
+│   │   ├─ auto_train.py
+│   │   ├─ clean_data.py
+│   │   └─ update_model.py
+├─ Chrome Extension/
 │   ├─ manifest.json
 │   ├─ background.js
 │   ├─ content_script.js
 │   ├─ popup.html
 │   └─ popup.js
-├─ run.sh               # The bash script
+├─ dataset/
+│   ├─ news_data.csv
+│   ├─ clean_news_data.csv
 ├─ requirements.txt
 ├─ LICENSE
-├─ test_model.py
-└─ README.md
-
+├─ README.md
 ```
 
 ---
@@ -82,35 +87,16 @@ uvicorn app:app --reload
 
 ### 1️⃣ **POST /check** (Detect Fake News)
 
-#### Request (JSON):
-```json
-{
-  "text": "The government has announced a new policy...",
-  "url": null
-}
-```
-OR
-```json
-{
-  "text": null,
-  "url": "https://suspicious-news.com/article123"
-}
-```
-
 #### Response (JSON):
 ```json
 {
-  "score": 87.5,
-  "explanation": "The score represents the model's confidence that the news is real.",
-  "recommendations": [
-    {"title": "BBC News", "url": "https://www.bbc.com"},
-    {"title": "Reuters", "url": "https://www.reuters.com"}
-  ]
+  "ai_score": 87.5,
+  "google_fact_check": null,
+  "source": "Hybrid (ThaiBERT + Google Fact Check)"
 }
 ```
-- **score**: The likelihood (0-100%) that the news is real.
-- **recommendations**: Trusted sources for verification.
-
+- **ai_score**: The likelihood (0-100%) that the news is real.
+- **source**: The model and method used for classification.
 
 ---
 ## 📊 **Model Training**
@@ -123,17 +109,18 @@ OR
 - Extracts key features from news content using `TfidfVectorizer`.
 
 ### 3️⃣ Model Training & Evaluation
-- Trains a **Logistic Regression classifier** (`test_model.py`).
+- Trains a **ThaiBERT classifier** (`auto_train.py`).
 - Evaluates **accuracy, precision, recall, and confusion matrix**.
 
 ### 4️⃣ Saving the Model
-- Saves the trained model and vectorizer using **Joblib** for deployment.
+- Saves the trained model as **model_latest.pth** for deployment.
+
 ---
 ## Chrome Extension
 
-- See the `extension/` folder.  
-- Load it in Chrome via `chrome://extensions/`, **Enable Developer Mode**, then **Load Unpacked** → select `extension/`.  
-- Right-click any highlighted text → “Check fake news”.
+- See the `Chrome Extension/` folder.  
+- Load it in Chrome via `chrome://extensions/`, **Enable Developer Mode**, then **Load Unpacked** → select `Chrome Extension/`.  
+- Right-click any highlighted text → “ตรวจสอบข่าวปลอม” to check for fake news.
 
 ---
 
@@ -145,25 +132,23 @@ OR
 - **Response**:
   ```json
   {
-    "score": 85.0,
-    "explanation": "...",
-    "recommendations": [
-      {"title": "BBC News", "url": "https://bbc.com"}
-    ]
+    "ai_score": 85.0,
+    "google_fact_check": null,
+    "source": "Hybrid (ThaiBERT + Google Fact Check)"
   }
   ```
-- The `score` indicates how “real” the news is (0-100%).
+- The `ai_score` indicates how “real” the news is (0-100%).
 
 ---
 ## 📌 **Future Improvements**
 
-🚀 Improve model accuracy with **deep learning (LSTMs, transformers)**  
+🚀 Improve model accuracy with **fine-tuned transformers**  
 🚀 Develop a **real-time browser extension** for fake news detection  
 🚀 Expand **dataset** with more diverse and multilingual news sources  
 🚀 Implement **fact-checking integrations** (e.g., Google Fact Check API)  
 ---
 
-## 🤝Contributing
+## 🤝 Contributing
 👤 Winithon (Project Lead)
 👥 Thitinan (AI Specialist & Document Writer)
 
@@ -181,4 +166,3 @@ OR
 
 This project is licensed under the [MIT License](LICENSE).  
 Copyright (c) 2025 [Winithon Chobchit], [Thitinan Grabthong]
-
