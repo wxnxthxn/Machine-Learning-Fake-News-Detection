@@ -1,24 +1,26 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import uvicorn
-import joblib
 import requests
 from bs4 import BeautifulSoup
-import os
-from google.oauth2 import service_account
-import googleapiclient.discovery
+import logging
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-# ✅ ตั้งค่า API Key สำหรับ Google Fact Check API
+# ✅ ตั้งค่า Logging
+logging.basicConfig(level=logging.INFO)
+
+# ✅ โหลด ThaiBERT (WangchanBERTa)
+MODEL_NAME = "airesearch/wangchanberta-base-att-spm-uncased"
+MODEL_PATH = "backend/model/model.pth"  # ✅ เปลี่ยน path ตามโครงสร้างโปรเจกต์ใหม่
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device("cpu")))
+model.eval()
+
+# ✅ ตั้งค่า Google Fact Check API Key
 GOOGLE_API_KEY = "AIzaSyDVVcqu_hUsnMKuvKHDR6s__ebXbMZ7pK0"
-
-# ✅ โหลดโมเดล AI (DistilBERT + LSTM)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-vectorizer_path = os.path.join(BASE_DIR, "model", "vectorizer.pkl")
-model_path = os.path.join(BASE_DIR, "model", "model.pkl")
-
-vectorizer = joblib.load(vectorizer_path)
-model = joblib.load(model_path)
 
 app = FastAPI()
 
@@ -37,63 +39,45 @@ class CheckRequest(BaseModel):
 
 @app.post("/check")
 def check_fakenews(request: CheckRequest):
-    if request.url:
-        try:
-            article_text = fetch_article_text(request.url)
-        except Exception:
-            raise HTTPException(status_code=400, detail="Cannot fetch article from the URL provided.")
-        text_to_check = article_text
-    elif request.text:
+    if request.text:
         text_to_check = request.text
+    elif request.url:
+        text_to_check = fetch_article_text(request.url)
     else:
         raise HTTPException(status_code=400, detail="No text or URL provided.")
 
-    # ✅ 1. ลองเช็คกับ AFP Fact Check ก่อน
-    afp_result = afp_fact_check(text_to_check)
-    if afp_result:
-        return {
-            "source": "AFP Fact Check",
-            "result": afp_result
-        }
+    # ✅ 1. ใช้ AI ThaiBERT วิเคราะห์ข่าว
+    inputs = tokenizer(text_to_check, return_tensors="pt", truncation=True, padding=True)
+    with torch.no_grad():
+        logits = model(**inputs).logits
+    ai_score = (1 - torch.softmax(logits, dim=1)[0][1].item()) * 100
 
-    # ✅ 2. ใช้ AI (DistilBERT + LSTM) วิเคราะห์
-    X_vec = vectorizer.transform([text_to_check])
-    prob_fake = model.predict_proba(X_vec)[0][1]
-    score_real = (1 - prob_fake) * 100
-
-    # ✅ 3. ถ้า AI ไม่แน่ใจ (40%-60%) → ใช้ Google API
-    if 40 <= score_real <= 60:
+    # ✅ 2. ถ้า AI ไม่มั่นใจ (40% - 60%) → ใช้ Google Fact Check API
+    google_result = None
+    if 40 <= ai_score <= 60:
         google_result = google_fact_check(text_to_check)
-        if google_result:
-            return {
-                "source": "Google Fact Check",
-                "result": google_result
-            }
+        if not google_result:
+            google_result = {"message": "❌ ไม่พบข้อมูลจาก Google Fact Check"}
 
     return {
-        "source": "AI Model",
-        "score": score_real
+        "source": "Hybrid (ThaiBERT + Google Fact Check)",
+        "ai_score": ai_score,
+        "google_fact_check": google_result
     }
 
-# ✅ ฟังก์ชันดึงข่าวจาก AFP Fact Check Thailand
-def afp_fact_check(query: str):
-    url = "https://factcheckthailand.afp.com/"
-    response = requests.get(url)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        articles = soup.find_all('article')
-        for article in articles:
-            title = article.find('h2').text if article.find('h2') else "No title"
-            link = article.find('a')['href'] if article.find('a') else "No link"
-            if query in title:
-                return {"title": title, "url": link}
-    return None
-
-# ✅ ใช้ Google Fact Check API เพื่อตรวจสอบข่าว
+# ✅ ฟังก์ชันดึงข่าวจาก Google Fact Check API
 def google_fact_check(query: str):
     url = f"https://factchecktools.googleapis.com/v1alpha1/claims:search?query={query}&key={GOOGLE_API_KEY}"
-    response = requests.get(url)
-    return response.json() if response.status_code == 200 else None
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logging.warning("⚠️ Google Fact Check API ไม่สามารถดึงข้อมูลได้")
+            return None
+    except requests.exceptions.RequestException as e:
+        logging.error(f"🔴 ไม่สามารถเชื่อมต่อ Google API: {str(e)}")
+        return None
 
 # ✅ ฟังก์ชันดึงเนื้อหาข่าวจาก URL
 def fetch_article_text(url: str) -> str:
@@ -106,4 +90,5 @@ def fetch_article_text(url: str) -> str:
         return "Unable to fetch content."
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)  # ✅ เปลี่ยนเป็นพอร์ต 8000

@@ -11,10 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function getBanner(score) {
-    if (score >= 75) return 'banner/correct.PNG';  // ✅ ข่าวจริง
-    if (score >= 50) return 'banner/warning.PNG';  // ⚠️ ข่าวไม่น่าเชื่อถือ
-    return 'banner/incorrect.PNG';                 // ❌ ข่าวปลอม
+    if (score >= 75) return chrome.runtime.getURL('banner/correct.PNG');  // ✅ ข่าวจริง
+    if (score >= 50) return chrome.runtime.getURL('banner/warning.PNG');  // ⚠️ ข่าวไม่น่าเชื่อถือ
+    return chrome.runtime.getURL('banner/incorrect.PNG');                 // ❌ ข่าวปลอม
 }
+
 
 function getLabel(score) {
     if (score >= 75) return '✅ ข่าวจริง';

@@ -7,19 +7,11 @@
     "background": {
         "service_worker": "background.js"
     },
-    "host_permissions": ["http://*/", "https://*/"],
+    "host_permissions": [
+        "http://localhost:8000/*"
+    ],
     "action": {
-        "default_popup": "popup.html",
-        "default_icon": {
-            "16": "icon/news16.png",
-            "48": "icon/news48.png",
-            "128": "icon/news128.png"
-        }
-    },
-    "icons": {
-        "16": "icon/news16.png",
-        "48": "icon/news48.png",
-        "128": "icon/news128.png"
+        "default_popup": "popup.html"
     },
     "content_scripts": [
         {
@@ -32,8 +24,12 @@
             "resources": [
                 "banner/correct.PNG",
                 "banner/warning.PNG",
-                "banner/incorrect.PNG"],
+                "banner/incorrect.PNG"
+            ],
             "matches": ["<all_urls>"]
         }
-    ]
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:8000"
+    }
 }
