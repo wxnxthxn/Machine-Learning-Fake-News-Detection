@@ -20,7 +20,7 @@ model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device("cpu")))
 model.eval()
 
 # ✅ ตั้งค่า Google Fact Check API Key
-GOOGLE_API_KEY = "AIzaSyDVVcqu_hUsnMKuvKHDR6s__ebXbMZ7pK0"
+GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY"
 
 app = FastAPI()
 
