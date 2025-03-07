@@ -18,6 +18,7 @@ wheels/
 .venv/
 env/
 ENV/
+.env
 
 # Logs and Debugging
 *.log

@@ -8,7 +8,7 @@
         "service_worker": "background.js"
     },
     "host_permissions": [
-        "http://localhost:8000/*"
+        "http://localhost:8001/*"
     ],
     "action": {
         "default_popup": "popup.html"
@@ -25,12 +25,13 @@
             "resources": [
                 "banner/correct.PNG",
                 "banner/warning.PNG",
-                "banner/incorrect.PNG"
+                "banner/incorrect.PNG",
+                "banner/suspicious.png"
             ],
             "matches": ["<all_urls>"]
         }
     ],
     "content_security_policy": {
-        "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:8000"
+        "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:8001"
     }
 }

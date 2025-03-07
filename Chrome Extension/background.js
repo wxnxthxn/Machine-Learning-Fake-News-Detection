@@ -11,7 +11,19 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.menuItemId === "check-text" && info.selectionText) {
         const textToCheck = info.selectionText.trim();
-        const API_URL = "http://localhost:8000/check";
+
+        // กำหนดความยาวขั้นต่ำของข้อความที่ต้องเลือก (ตัวอย่าง ใช้ 100 ตัวอักษร)
+        const MIN_TEXT_LENGTH = 100;
+        if (textToCheck.length < MIN_TEXT_LENGTH) {
+            // แจ้งเตือนผู้ใช้งานว่าข้อความที่เลือกสั้นเกินไป
+            chrome.tabs.sendMessage(tab.id, {
+                type: "SHOW_ERROR",
+                message: `กรุณาเลือกข้อความที่มีความยาวอย่างน้อย ${MIN_TEXT_LENGTH} ตัวอักษร เพื่อการตรวจสอบข่าว`
+            });
+            return;
+        }
+
+        const API_URL = "http://localhost:8001/check";
 
         console.log("📤 ส่งข้อมูลไปที่เซิร์ฟเวอร์:", JSON.stringify({ text: textToCheck }));
 
@@ -29,15 +41,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
             const result = await response.json();
             console.log("✅ ผลลัพธ์จาก API:", result);
 
-            // ✅ บันทึกข้อมูลลง storage ให้ popup ใช้
+            // บันทึกข้อมูลลง storage ให้ popup ใช้งาน
             chrome.storage.local.set({ analysis: result }, () => {
                 console.log("✅ ผลลัพธ์ถูกบันทึกลง Storage");
-
-                // ✅ เปิด popup
+                // เปิด popup
                 chrome.action.openPopup();
             });
 
-            // ✅ ส่งข้อมูลไปยัง content_script.js
+            // ส่งข้อมูลไปยัง content_script.js
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 files: ["content_script.js"]
@@ -52,7 +63,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
         } catch (error) {
             console.error("🚨 เชื่อมต่อกับเซิร์ฟเวอร์ไม่ได้:", error);
-            chrome.tabs.sendMessage(tab.id, { type: "SHOW_ERROR", message: "❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่" });
+            chrome.tabs.sendMessage(tab.id, {
+                type: "SHOW_ERROR",
+                message: "❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่"
+            });
         }
     }
 });

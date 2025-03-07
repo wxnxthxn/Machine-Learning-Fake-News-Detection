@@ -1,7 +1,7 @@
 ### `📰 Machine Learning Fake News Detection`
 
  ## 🔍 **Project Overview**
-This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text or article URLs. It uses a trained Machine Learning model (Logistic Regression + TF-IDF) to classify news as *real* or *fake*. The system can also give a trust score and explanations.
+This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text or article URLs. It uses a trained **ThaiBERT (WangchanBERTa) model** to classify news as *real* or *fake*. The system can also give a trust score and explanations.
 
 ## 📌Table of Contents
 
@@ -18,41 +18,49 @@ This project provides a **Chrome Extension** and a **FastAPI** backend to detect
 
 ## 📌Features
 
-✅ Classifies news articles as **Real or Fake**  
-✅  **trained ML model** for predictions  
-✅ Supports **both direct text input analysis**  
-✅ Provides a **FastAPI-based REST API** for integration into other systems  
-✅ Offers **trusted news recommendations** if an article is likely fake  
-
+✅ Classifies news articles as **Real or Fake** based on highlighted text input. 
+✅ Utilizes a **ThaiBERT (WangchanBERTa) model** for predictions.  
+✅ Provides a **FastAPI-based REST API** for integration with the Chrome Extension.
+✅ Outputs a trust score along with a simple result label (e.g., ✅ ข่าวจริง).
 ---
 ## 🛠 **Tech Stack**
-- **Programming Language:** Python
+- **Programming Language:** Python, JavaScript, HTML, CSS
 - **Framework:** FastAPI
-- **Machine Learning Model:** Logistic Regression with TF-IDF
-- **Data Processing:** Pandas, Joblib, BeautifulSoup
-- **Storage & Deployment:** GitHub, Model Persistence
+- **Machine Learning Model:** ThaiBERT (WangchanBERTa) for text classification
+- **Browser Extension:** Chrome Extension API, JavaScript
+- **Deployment & Storage:** GitHub (code only; model files are handled separately due to size)
+
 ---
 ## Architecture
 
 ```bash
-ProjectMLFakeNewsCheck/
+ProjectMLFakeNewsDetection/
 ├─ backend/
-│   ├─ app.py
+│   ├─ app.py                 # FastAPI backend API for text classification
 │   ├─ model/
-│   │   ├─ model.pkl
-│   │   └─ vectorizer.pkl
-├─ extension/
-│   ├─ manifest.json
-│   ├─ background.js
-│   ├─ content_script.js
-│   ├─ popup.html
-│   └─ popup.js
-├─ run.sh               # The bash script
-├─ requirements.txt
+│   │   ├─ model_latest.pth   # Latest trained ThaiBERT model (not pushed to GitHub)
+│   │   ├─ update_model.py     # Script to update the model used by the API
+│   │   └─ predict.py          # Module for model inference (used by the API)
+│   ├─ training/
+│   │   ├─ auto_train.py       # Script for training the ThaiBERT model
+│   │   └─ clean_data.py       # Script for cleaning and preprocessing the dataset
+├─ Chrome Extension/
+├─ banner/
+│   │   ├─ correct.PNG # Banner Real news
+│   │   ├─ incorrect.PNG # Banner Fake news
+│   │   ├─ suspicious.PNG # Banner Rumor news
+│   │   └─ warning.PNG # Banner Unreliable news
+│   ├─ manifest.json          # Chrome Extension manifest
+│   ├─ background.js          # Background script handling context menu and API calls
+│   ├─ content_script.js      # Content script for in-page interactions
+│   ├─ popup.html             # Popup UI for displaying analysis results
+│   └─ popup.js               # Script for handling popup UI logic
+├─ dataset/
+│   ├─ news_data.csv          # Raw news dataset
+│   └─ clean_news_data.csv    # Cleaned news dataset for training
+├─ requirements.txt           # Python dependencies
 ├─ LICENSE
-├─ test_model.py
 └─ README.md
-
 ```
 
 ---
@@ -62,7 +70,7 @@ ProjectMLFakeNewsCheck/
 ### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/wxnxthxn/Machine-Learning-Fake-News-Detection.git
-cd fake-news-detection
+cd Machine-Learning-Fake-News-Detection
 ```
 
 ### 2️⃣ Install Dependencies
@@ -72,68 +80,62 @@ pip install -r requirements.txt
 
 ### 3️⃣ Run the FastAPI Server
 ```bash
-uvicorn app:app --reload
+uvicorn backend.app:app --host 0.0.0.0 --port 8001 --reload
 ```
-- The API will be available at `http://127.0.0.1:8000`
-- Check the interactive API docs at `http://127.0.0.1:8000/docs`
+- The API will be available at `http://127.0.0.1:8001`
+- Check the interactive API docs at `http://127.0.0.1:8001/docs`
 ---
 
 ## 🔥 **API Usage**
 
 ### 1️⃣ **POST /check** (Detect Fake News)
 
-#### Request (JSON):
-```json
-{
-  "text": "The government has announced a new policy...",
-  "url": null
-}
-```
-OR
-```json
-{
-  "text": null,
-  "url": "https://suspicious-news.com/article123"
-}
-```
-
 #### Response (JSON):
 ```json
 {
-  "score": 87.5,
-  "explanation": "The score represents the model's confidence that the news is real.",
-  "recommendations": [
-    {"title": "BBC News", "url": "https://www.bbc.com"},
-    {"title": "Reuters", "url": "https://www.reuters.com"}
-  ]
+  "source": "ThaiBERT",
+  "ai_score": 87.5
 }
 ```
-- **score**: The likelihood (0-100%) that the news is real.
-- **recommendations**: Trusted sources for verification.
-
+- **ai_score**: Indicates the likelihood (0-100%) that the news is real.
+- **source**: The model used for prediction (ThaiBERT).
 
 ---
 ## 📊 **Model Training**
 
 ### 1️⃣ Dataset Cleaning
-- Uses `clean_data.py` to preprocess news data (`news_data.csv`).
-- Maps `real → 0` and `fake → 1`, removes NaNs, and normalizes text.
+- Run `clean_data.py` to preprocess the raw dataset (`news_data.csv`)and generate (`clean_news_data.csv`).
+```bash
+python backend/training/clean_data.py
+```
 
-### 2️⃣ Feature Engineering (TF-IDF)
-- Extracts key features from news content using `TfidfVectorizer`.
+### 2️⃣ Model Training
+- Run `auto_train.py` to train the ThaiBERT model on the cleaned dataset.
+```bash
+python backend/training/auto_train.py
+```
 
-### 3️⃣ Model Training & Evaluation
-- Trains a **Logistic Regression classifier** (`test_model.py`).
-- Evaluates **accuracy, precision, recall, and confusion matrix**.
+### 3️⃣ Update Model for Inference
+- After training, run `update_model.py` to update the model used by the API.
+```bash
+python backend/training/update_model.py
+```
 
 ### 4️⃣ Saving the Model
-- Saves the trained model and vectorizer using **Joblib** for deployment.
+- Saves the trained model as **model_latest.pth** for deployment.
+
 ---
 ## Chrome Extension
 
-- See the `extension/` folder.  
-- Load it in Chrome via `chrome://extensions/`, **Enable Developer Mode**, then **Load Unpacked** → select `extension/`.  
-- Right-click any highlighted text → “Check fake news”.
+- The Chrome Extension is located in the `Chrome Extension/` folder.
+- To install the extension:
+  1. Open Chrome and navigate to `chrome://extensions/`
+  2. Enable **Developer Mode**
+  3. Click **Load Unpacked** and select the `Chrome Extension/` folder.
+- To use the extension:
+  - Highlight the text on any webpage.
+  - Right-click and select **"ตรวจสอบข่าวปลอม"**.
+  - The extension will display a popup showing the analysis results.
 
 ---
 
@@ -141,29 +143,27 @@ OR
 
 **POST** `/check`
 
-- **Body**: `{"text": "..."} or {"url": "..."}`  
+- **Body**: `{"text": "..."}`  
+  (Note: This API now only accepts a text input from highlighted content.)
 - **Response**:
   ```json
   {
-    "score": 85.0,
-    "explanation": "...",
-    "recommendations": [
-      {"title": "BBC News", "url": "https://bbc.com"}
-    ]
+    "source": "ThaiBERT",
+    "ai_score": 85.0
   }
   ```
-- The `score` indicates how “real” the news is (0-100%).
+- The `ai_score` indicates how “real” the news is (0-100%).
 
 ---
 ## 📌 **Future Improvements**
 
-🚀 Improve model accuracy with **deep learning (LSTMs, transformers)**  
+🚀 Enhance model accuracy with further fine-tuning on diverse datasets. 
 🚀 Develop a **real-time browser extension** for fake news detection  
 🚀 Expand **dataset** with more diverse and multilingual news sources  
-🚀 Implement **fact-checking integrations** (e.g., Google Fact Check API)  
+🚀 Integrate additional features for real-time news verification.
 ---
 
-## 🤝Contributing
+## 🤝 Contributing
 👤 Winithon (Project Lead)
 👥 Thitinan (AI Specialist & Document Writer)
 
@@ -174,6 +174,7 @@ OR
    ```  
 3. Commit and push your changes  
 4. Open a Pull Request
+5. Review us on
 
 ---
 
@@ -181,4 +182,3 @@ OR
 
 This project is licensed under the [MIT License](LICENSE).  
 Copyright (c) 2025 [Winithon Chobchit], [Thitinan Grabthong]
-

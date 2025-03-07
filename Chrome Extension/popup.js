@@ -10,13 +10,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const bannerElement = document.getElementById('result-banner');
             const scoreElement = document.getElementById('result-score');
 
-            // ตั้งค่าผลลัพธ์
+            // ตั้งค่าผลลัพธ์ (Label) โดยอิงจากคะแนนที่ได้จากโมเดล
             analysisElement.innerText = getLabel(data.analysis.ai_score);
 
-            // ตั้งค่าภาพ Banner
+            // ตั้งค่าภาพ Banner ตามประเภทข่าว
             bannerElement.src = getBanner(data.analysis.ai_score);
 
-            // แสดงโอกาสที่เป็นข่าวจริง
+            // แสดงโอกาสที่เป็นข่าวจริง (คะแนน)
             scoreElement.innerText = data.analysis.ai_score.toFixed(2);
         } else {
             console.error("⚠️ ไม่พบข้อมูลจาก Storage");
@@ -26,16 +26,32 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('close-popup').addEventListener('click', () => window.close());
 });
 
-// ฟังก์ชันเลือกไอคอนแบนเนอร์ที่เหมาะสม
+// ฟังก์ชันเลือกไอคอนแบนเนอร์ที่เหมาะสม (แบ่งเป็น 4 ประเภท)
+// - ข่าวจริง: score ≥ 80
+// - ข่าวไม่น่าเชื่อถือ: 50 ≤ score < 80
+// - ข่าวลือ: 25 ≤ score < 50
+// - ข่าวปลอม: score < 25
 function getBanner(score) {
-    if (score >= 75) return chrome.runtime.getURL('banner/correct.PNG');
-    if (score >= 50) return chrome.runtime.getURL('banner/warning.PNG');
-    return chrome.runtime.getURL('banner/incorrect.PNG');
+    if (score >= 80) {
+        return chrome.runtime.getURL('banner/correct.PNG');
+    } else if (score >= 50) {
+        return chrome.runtime.getURL('banner/warning.PNG');
+    } else if (score >= 25) {
+        return chrome.runtime.getURL('banner/suspicious.png');
+    } else {
+        return chrome.runtime.getURL('banner/incorrect.PNG');
+    }
 }
 
-// ฟังก์ชันกำหนดข้อความแสดงผล
+// ฟังก์ชันกำหนดข้อความแสดงผลตามคะแนน (4 ประเภท)
 function getLabel(score) {
-    if (score >= 75) return '✅ ข่าวจริง';
-    if (score >= 50) return '⚠️ ข่าวไม่น่าเชื่อถือ';
-    return '❌ ข่าวปลอม';
+    if (score >= 80) {
+        return '✅ ข่าวจริง';
+    } else if (score >= 50) {
+        return '⚠️ ข่าวไม่น่าเชื่อถือ';
+    } else if (score >= 25) {
+        return '🔍 ข่าวลือ';
+    } else {
+        return '❌ ข่าวปลอม';
+    }
 }
