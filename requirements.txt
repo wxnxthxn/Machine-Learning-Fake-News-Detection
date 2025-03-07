@@ -5,4 +5,5 @@ flask
 fastapi
 uvicorn
 pandantic
-bs4
+logging
+torch
