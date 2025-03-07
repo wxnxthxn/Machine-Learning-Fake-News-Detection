@@ -18,7 +18,6 @@ model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device("cpu")))
 model.eval()
 
-# สร้าง FastAPI app
 app = FastAPI()
 
 # ตั้งค่า CORS Middleware

@@ -22,6 +22,7 @@ This project provides a **Chrome Extension** and a **FastAPI** backend to detect
 ✅ Utilizes a **ThaiBERT (WangchanBERTa) model** for predictions.  
 ✅ Provides a **FastAPI-based REST API** for integration with the Chrome Extension.
 ✅ Outputs a trust score along with a simple result label (e.g., ✅ ข่าวจริง).
+
 ---
 ## 🛠 **Tech Stack**
 - **Programming Language:** Python, JavaScript, HTML, CSS
@@ -29,7 +30,8 @@ This project provides a **Chrome Extension** and a **FastAPI** backend to detect
 - **Machine Learning Model:** ThaiBERT (WangchanBERTa) for text classification
 - **Browser Extension:** Chrome Extension API, JavaScript
 - **Deployment & Storage:** GitHub (code only; model files are handled separately due to size)
-
+- **Data Processing:** Pandas, PyTorch, Transformers
+- **Storage & Deployment:** GitHub, Model Persistence
 ---
 ## Architecture
 
@@ -61,6 +63,7 @@ ProjectMLFakeNewsDetection/
 ├─ requirements.txt           # Python dependencies
 ├─ LICENSE
 └─ README.md
+
 ```
 
 ---
@@ -99,6 +102,12 @@ uvicorn backend.app:app --host 0.0.0.0 --port 8001 --reload
 ```
 - **ai_score**: Indicates the likelihood (0-100%) that the news is real.
 - **source**: The model used for prediction (ThaiBERT).
+
+}
+```
+- **ai_score**: The likelihood (0-100%) that the news is real.
+- **source**: The model and method used for classification.
+
 
 ---
 ## 📊 **Model Training**
@@ -151,13 +160,14 @@ python backend/training/update_model.py
     "source": "ThaiBERT",
     "ai_score": 85.0
   }
+
   ```
 - The `ai_score` indicates how “real” the news is (0-100%).
 
 ---
 ## 📌 **Future Improvements**
 
-🚀 Enhance model accuracy with further fine-tuning on diverse datasets. 
+🚀 Enhance model accuracy with further fine-tuning on diverse datasets.
 🚀 Develop a **real-time browser extension** for fake news detection  
 🚀 Expand **dataset** with more diverse and multilingual news sources  
 🚀 Integrate additional features for real-time news verification.
