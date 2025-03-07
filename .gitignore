@@ -45,7 +45,9 @@ Desktop.ini
 # Model files
 *.pkl
 *.pth
-backend/model/updated.flag
+backend/model/*.pth
+backend/model/
+
 
 # Test coverage
 .coverage
