@@ -1,4 +1,4 @@
-### `📰 Machine Learning Fake News Detection`
+ ### `📰 Machine Learning Fake News Detection`
 
  ## 🔍 **Project Overview**
 This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text or article URLs. It uses a trained **ThaiBERT (WangchanBERTa) model** to classify news as *real* or *fake*. The system can also give a trust score and explanations.
@@ -18,9 +18,9 @@ This project provides a **Chrome Extension** and a **FastAPI** backend to detect
 
 ## 📌Features
 
-✅ Classifies news articles as **Real or Fake** based on highlighted text input. 
+✅ Classifies news articles as **Real or Fake** based on highlighted text input.  
 ✅ Utilizes a **ThaiBERT (WangchanBERTa) model** for predictions.  
-✅ Provides a **FastAPI-based REST API** for integration with the Chrome Extension.
+✅ Provides a **FastAPI-based REST API** for integration with the Chrome Extension.  
 ✅ Outputs a trust score along with a simple result label (e.g., ✅ ข่าวจริง).
 
 ---
@@ -41,11 +41,11 @@ ProjectMLFakeNewsDetection/
 │   ├─ app.py                 # FastAPI backend API for text classification
 │   ├─ model/
 │   │   ├─ model_latest.pth   # Latest trained ThaiBERT model (not pushed to GitHub)
-│   │   ├─ update_model.py     # Script to update the model used by the API
-│   │   └─ predict.py          # Module for model inference (used by the API)
+│   │   └─ update_model.py     # Script to update the model used by the API
 │   ├─ training/
 │   │   ├─ auto_train.py       # Script for training the ThaiBERT model
-│   │   └─ clean_data.py       # Script for cleaning and preprocessing the dataset
+│   │   ├─ clean_data.py       # Script for cleaning and preprocessing the dataset
+│   │   └─ model_tester.py     # Script for testing the ThaiBERT model
 ├─ Chrome Extension/
 ├─ banner/
 │   │   ├─ correct.PNG # Banner Real news
@@ -103,13 +103,6 @@ uvicorn backend.app:app --host 0.0.0.0 --port 8001 --reload
 - **ai_score**: Indicates the likelihood (0-100%) that the news is real.
 - **source**: The model used for prediction (ThaiBERT).
 
-}
-```
-- **ai_score**: The likelihood (0-100%) that the news is real.
-- **source**: The model and method used for classification.
-
-
----
 ## 📊 **Model Training**
 
 ### 1️⃣ Dataset Cleaning
@@ -167,14 +160,14 @@ python backend/training/update_model.py
 ---
 ## 📌 **Future Improvements**
 
-🚀 Enhance model accuracy with further fine-tuning on diverse datasets.
+🚀 Enhance model accuracy with further fine-tuning on diverse datasets.  
 🚀 Develop a **real-time browser extension** for fake news detection  
 🚀 Expand **dataset** with more diverse and multilingual news sources  
 🚀 Integrate additional features for real-time news verification.
 ---
 
 ## 🤝 Contributing
-👤 Winithon (Project Lead)
+👤 Winithon (Project Lead & Programmer)  
 👥 Thitinan (AI Specialist & Document Writer)
 
 1. Fork this repo  
