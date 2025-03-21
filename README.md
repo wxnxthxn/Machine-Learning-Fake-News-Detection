@@ -177,7 +177,7 @@ python backend/training/update_model.py
    ```  
 3. Commit and push your changes  
 4. Open a Pull Request
-5. Review us on
+5. Review us on Check out this item on the Chrome Web Store https://chromewebstore.google.com/detail/lajjflehekjcbpjfejmibeobjlomlenp?utm_source=item-share-cp
 
 ---
 
