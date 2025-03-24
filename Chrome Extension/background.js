@@ -14,16 +14,18 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
         // กำหนดความยาวขั้นต่ำของข้อความที่ต้องเลือก (ตัวอย่าง ใช้ 100 ตัวอักษร)
         const MIN_TEXT_LENGTH = 100;
-        if (textToCheck.length < MIN_TEXT_LENGTH) {
-            // แจ้งเตือนผู้ใช้งานว่าข้อความที่เลือกสั้นเกินไป
-            chrome.tabs.sendMessage(tab.id, {
-                type: "SHOW_ERROR",
-                message: `กรุณาเลือกข้อความที่มีความยาวอย่างน้อย ${MIN_TEXT_LENGTH} ตัวอักษร เพื่อการตรวจสอบข่าว`
-            });
-            return;
-        }
+    if (textToCheck.length < MIN_TEXT_LENGTH) {
+        const selectedLength = textToCheck.length;
+        const missingChars = MIN_TEXT_LENGTH - selectedLength;
+    chrome.tabs.sendMessage(tab.id, {
+        type: "SHOW_ERROR",
+        message: `ข้อความที่เลือกมีความยาว ${selectedLength} ตัวอักษร กรุณาเลือกเพิ่มอีก ${missingChars} ตัวอักษร เพื่อให้ครบ ${MIN_TEXT_LENGTH} ตัวอักษร`
+    });
+    return;
+    }
 
-        const API_URL = "http://localhost:8001/check";
+
+        const API_URL = "http://52.249.222.74:8001/check";
 
         console.log("📤 ส่งข้อมูลไปที่เซิร์ฟเวอร์:", JSON.stringify({ text: textToCheck }));
 
