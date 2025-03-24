@@ -1,7 +1,7 @@
  ### `📰 Machine Learning Fake News Detection`
 
  ## 🔍 **Project Overview**
-This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text or article URLs. It uses a trained **ThaiBERT (WangchanBERTa) model** to classify news as *real* or *fake*. The system can also give a trust score and explanations.
+This project provides a **Chrome Extension** and a **FastAPI** backend to detect fake news based on text. It uses a trained **ThaiBERT (WangchanBERTa) model** to classify news as *real* or *fake*. The system can also give a trust score and explanations.
 
 ## 📌Table of Contents
 
@@ -177,7 +177,7 @@ python backend/training/update_model.py
    ```  
 3. Commit and push your changes  
 4. Open a Pull Request
-5. Review us on
+5. Review us on the Chrome Web Store https://chromewebstore.google.com/detail/lajjflehekjcbpjfejmibeobjlomlenp?utm_source=item-share-cp
 
 ---
 
