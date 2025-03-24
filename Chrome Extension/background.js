@@ -25,7 +25,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 
 
-        const API_URL = "http://52.249.222.74:8001/check";
+        const API_URL = "http://localhost:80000/check";
 
         console.log("📤 ส่งข้อมูลไปที่เซิร์ฟเวอร์:", JSON.stringify({ text: textToCheck }));
 
