@@ -30,3 +30,4 @@
     "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://52.249.222.74:8001"
   }
 }
+
